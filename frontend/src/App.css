@@ -1,0 +1,144 @@
+/* Add these button classes to your existing CSS file */
+
+/* Primary form button - matches navbar design */
+.btn-form {
+  padding: 10px 24px;
+  border-radius: 8px;
+  background: #1f2937;
+  color: white;
+  border: 2px solid #a3e635;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.btn-form:hover {
+  background: white;
+  color: #1f2937;
+  border-color: #a3e635;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(163, 230, 53, 0.2);
+}
+
+.btn-form:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(163, 230, 53, 0.2);
+}
+
+.btn-form:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-form:disabled:hover {
+  background: #1f2937;
+  color: white;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Secondary form button (for cancel/secondary actions) */
+.btn-form-secondary {
+  padding: 10px 24px;
+  border-radius: 8px;
+  background: transparent;
+  color: #6b7280;
+  border: 2px solid #6b7280;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.btn-form-secondary:hover {
+  background: #6b7280;
+  color: white;
+  border-color: #6b7280;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.2);
+}
+
+.btn-form-secondary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(107, 114, 128, 0.2);
+}
+
+.btn-form-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-form-secondary:disabled:hover {
+  background: transparent;
+  color: #6b7280;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Button container for consistent spacing */
+.btn-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* Small button variant */
+.btn-form-sm {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+/* Large button variant */
+.btn-form-lg {
+  padding: 12px 32px;
+  font-size: 16px;
+}
+
+/* Full width button */
+.btn-form-full {
+  width: 100%;
+}
+
+/* Danger button variant */
+.btn-form-danger {
+  padding: 10px 24px;
+  border-radius: 8px;
+  background: #1f2937;
+  color: white;
+  border: 2px solid #ef4444;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.btn-form-danger:hover {
+  background: #ef4444;
+  color: white;
+  border-color: #ef4444;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-form-danger:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
