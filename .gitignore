@@ -1,0 +1,26 @@
+node_modules/
+**/node_modules/
+﻿# Python artifacts
+**/__pycache__/
+*.py[cod]
+
+# Python virtualenv(s)
+**/.venv/
+
+# SQLite database
+oms.db
+
+# Node/npm artifacts
+dist/
+build/
+
+# Editor/project files
+*.log
+.DS_Store
+
+# VSCode / JetBrains etc
+.vscode/
+.idea/
+
+.env
+.venv/
