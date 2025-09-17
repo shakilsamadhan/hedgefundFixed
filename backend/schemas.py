@@ -158,13 +158,36 @@ class AssetFetchRequest(BaseModel):
     }
 
 
-class Role(BaseModel):
-    id: int
+# -------- Action --------
+class ActionBase(BaseModel):
     name: str
+
+class ActionCreate(ActionBase):
+    pass
+
+class Action(ActionBase):
+    id: int
 
     class Config:
         from_attributes = True
 
+
+# -------- Role --------
+class RoleBase(BaseModel):
+    name: str
+
+class RoleCreate(RoleBase):
+    pass
+
+class Role(RoleBase):
+    id: int
+    actions: List[Action] = []   # role has actions
+
+    class Config:
+        from_attributes = True
+
+
+# -------- User --------
 class UserBase(BaseModel):
     username: str
     email: str
@@ -175,15 +198,16 @@ class UserCreate(UserBase):
 class UserLogin(BaseModel):
     email: str
     password: str
-    
+
 class User(UserBase):
     id: int
-    roles: List[Role] = []   # add roles here
+    roles: List[Role] = []   # user has roles, each role has actions
 
     class Config:
         from_attributes = True
 
+
+# -------- Token --------
 class Token(BaseModel):
     access_token: str
     token_type: str
-

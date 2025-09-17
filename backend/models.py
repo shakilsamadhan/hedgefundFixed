@@ -73,11 +73,20 @@ class WatchListItem(Base):
     cusip = Column(String, nullable=False, unique=True, index=True)
     asset_type = Column(SAEnum(AssetType, name="asset_type"), nullable=False, index=True)
 
+# User ↔ Role (many-to-many)
 user_roles = Table(
     "user_roles",
     Base.metadata,
     Column("user_id", Integer, ForeignKey("users.id"), primary_key=True),
     Column("role_id", Integer, ForeignKey("roles.id"), primary_key=True)
+)
+
+# Role ↔ Action (many-to-many)
+role_actions = Table(
+    "role_actions",
+    Base.metadata,
+    Column("role_id", Integer, ForeignKey("roles.id"), primary_key=True),
+    Column("action_id", Integer, ForeignKey("actions.id"), primary_key=True)
 )
 
 class User(Base):
@@ -88,6 +97,9 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     roles = relationship("Role", secondary=user_roles, back_populates="users")
+    def has_action(self, action_name: str) -> bool:
+        """Check if this user has a given action permission"""
+        return any(action.name == action_name for role in self.roles for action in role.actions)
 
 class Role(Base):
     __tablename__ = "roles"
@@ -96,3 +108,12 @@ class Role(Base):
     name = Column(String, unique=True, index=True)
 
     users = relationship("User", secondary=user_roles, back_populates="roles")
+    actions = relationship("Action", secondary=role_actions, back_populates="roles")
+
+class Action(Base):
+    __tablename__ = "actions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True)
+
+    roles = relationship("Role", secondary=role_actions, back_populates="actions")

@@ -4,7 +4,7 @@ Initializes app, includes routers, and configures middleware.
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.routers import assets, trades, holdings, macro, watchlist, auth
+from backend.routers import assets, trades, holdings, macro, watchlist, auth, accesscontrol
 from backend.routers import assetdata
 from backend.database import Base, engine
 from backend.routers.macro import router as macro_router
@@ -17,7 +17,7 @@ app = FastAPI(
 )
 
 # Drop all tables
-# Base.metadata.drop_all(bind=engine)
+#Base.metadata.drop_all(bind=engine)
 
 Base.metadata.create_all(bind=engine)
 
@@ -32,6 +32,7 @@ app.add_middleware(
 
 # Include API routers
 app.include_router(assets.router, prefix="/api/assets", tags=["Assets"])
+app.include_router(accesscontrol.router)
 app.include_router(trades.router, prefix="/api/trades", tags=["Trades"])
 app.include_router(holdings.router, prefix="/api/holdings", tags=["Holdings"])
 app.include_router(macro.router)

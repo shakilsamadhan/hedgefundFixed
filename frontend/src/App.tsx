@@ -15,6 +15,7 @@ import Navbar from "./pages/NavBar";
 import GoogleCallback from "./pages/Auth/GoogleCallBack";
 import { useAuth } from "./context/AuthContext";
 import "./App.css";
+import RoleActionManager from "./pages/RoleActionManager";
 
 export default function App() {
   const { isLoggedIn } = useAuth();
@@ -68,6 +69,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <WatchList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/actionmanager"
+            element={
+              <ProtectedRoute>
+                <RoleActionManager/>
               </ProtectedRoute>
             }
           />

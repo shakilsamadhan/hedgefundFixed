@@ -143,8 +143,3 @@ def google_callback(code: str, db: Session = Depends(get_db)):
 def get_users(db: Session = Depends(get_db)):
     return db.query(models.User).all()
 
-#, response_model=list[schemas.Role]
-@router.get("/roles")
-def get_roles(db: Session = Depends(get_db)):
-    roles = db.query(models.Role).all()
-    return GOOGLE_CLIENT_ID
