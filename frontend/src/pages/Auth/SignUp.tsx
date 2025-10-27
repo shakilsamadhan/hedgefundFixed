@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { handleGoogle } from "../../api/auth";
+import { handleGoogleLogin } from "../../api/auth";
 import "./Auth.css";
 
 const SignUp: React.FC = () => {
@@ -73,7 +73,11 @@ const SignUp: React.FC = () => {
         password,
       });
       const token = loginRes.data.access_token;
-      const user = { email: loginRes.data.email, username: loginRes.data.username || username };
+      const user = { 
+        email: loginRes.data.email, 
+        username: loginRes.data.username || username ,
+        roles: loginRes.data.roles || [] 
+      };
       
       setToken(token);
       setUser(user);
@@ -96,7 +100,7 @@ const SignUp: React.FC = () => {
   const handleGoogleClick = async () => {
     try {
       setError("");
-      await handleGoogle();
+      await handleGoogleLogin();
     } catch (err) {
       setError("Google sign up failed. Please try again.");
     }

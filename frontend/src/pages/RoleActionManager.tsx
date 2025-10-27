@@ -1,21 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useAuth } from "../context/AuthContext";
-
+import { Role, useAuth } from "../context/AuthContext";
 
 const BASE_URL = "http://127.0.0.1:8000/access"; // backend URL
-
 
 interface Action {
   id: number;
   name: string;
 }
 
-interface Role {
-  id: number;
-  name: string;
-  actions: Action[];
-}
+
 
 export default function RoleActionManager() {
   const { token } = useAuth();
@@ -25,6 +19,7 @@ export default function RoleActionManager() {
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!token) return; 
     const fetchData = async () => {
       try {
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
@@ -85,22 +80,23 @@ export default function RoleActionManager() {
       <table className="table-auto border-collapse border border-gray-400 w-full">
         <thead>
           <tr>
-            <th className="border border-gray-400 px-4 py-2">Role</th>
-            {actions.map((action) => (
-              <th key={action.id} className="border border-gray-400 px-4 py-2">
-                {action.name}
+            <th className="border border-gray-400 px-4 py-2">Action</th>
+            {roles.map((role) => (
+              <th key={role.id} className="border border-gray-400 px-4 py-2">
+                {role.name}
               </th>
             ))}
-            <th className="border border-gray-400 px-4 py-2">Save</th>
           </tr>
         </thead>
         <tbody>
-          {roles.map((role) => (
-            <tr key={role.id}>
-              <td className="border border-gray-400 px-4 py-2 font-semibold">{role.name}</td>
-              {actions.map((action) => (
+          {actions.map((action) => (
+            <tr key={action.id}>
+              <td className="border border-gray-400 px-4 py-2 font-semibold">
+                {action.name}
+              </td>
+              {roles.map((role) => (
                 <td
-                  key={action.id}
+                  key={role.id}
                   className="border border-gray-400 px-4 py-2 text-center"
                 >
                   <input
@@ -110,7 +106,19 @@ export default function RoleActionManager() {
                   />
                 </td>
               ))}
-              <td className="border border-gray-400 px-4 py-2 text-center">
+            </tr>
+          ))}
+
+          {/* Last row with Save buttons */}
+          <tr>
+            <td className="border border-gray-400 px-4 py-2 font-semibold">
+              Save
+            </td>
+            {roles.map((role) => (
+              <td
+                key={role.id}
+                className="border border-gray-400 px-4 py-2 text-center"
+              >
                 <button
                   className="bg-blue-500 text-white px-3 py-1 rounded"
                   onClick={() => handleSubmit(role.id)}
@@ -118,8 +126,8 @@ export default function RoleActionManager() {
                   Save
                 </button>
               </td>
-            </tr>
-          ))}
+            ))}
+          </tr>
         </tbody>
       </table>
     </div>

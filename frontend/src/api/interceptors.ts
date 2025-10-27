@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 
 // Create axios instance
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000',
+  baseURL: 'http://127.0.0.1:8000/api',
 });
 
 // Setup interceptors

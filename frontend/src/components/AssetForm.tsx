@@ -56,8 +56,9 @@ export default function AssetForm({ initialData, onSave, onCancel }: Props) {
     setLoading(true);
     try {
       const data: AssetFetchResponse = await fetchAssetData(cusip.trim(), type);
+      console.log(data);
       // populate form fields from Bloomberg response:
-      setDisplayName(data.display_name || "");
+      setDisplayName(data.deal_name || "");
       setIssuer(data.issuer || "");
       setDealName(data.deal_name || "");
       setSpreadCoupon(data.spread_coupon ?? 0);
@@ -74,6 +75,27 @@ export default function AssetForm({ initialData, onSave, onCancel }: Props) {
       setLoading(false);
     }
   };
+  const formatDateForInput = (dateStr: string) => {
+    if (!dateStr) return "";
+
+    // if it's already ISO (from input type="date")
+    if (dateStr.includes("-")) return dateStr;
+
+    // if it's MM/DD/YYYY (from API)
+    const [month, day, year] = dateStr.split("/");
+    if (!month || !day || !year) return ""; // avoid undefined errors
+
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  };
+    const normalizeDate = (dateStr: string) => {
+    if (!dateStr) return "";
+    // Handle both formats
+    if (dateStr.includes("/")) {
+      const [month, day, year] = dateStr.split("/");
+      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+    }
+    return dateStr; // already correct
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +106,7 @@ export default function AssetForm({ initialData, onSave, onCancel }: Props) {
       issuer,
       deal_name: dealName,
       spread_coupon: spreadCoupon,
-      maturity,
+      maturity:normalizeDate(maturity),
       payment_rank: paymentRank,
       moodys_cfr: moodysCfr,
       moodys_asset: moodysAsset,
@@ -96,7 +118,8 @@ export default function AssetForm({ initialData, onSave, onCancel }: Props) {
     try {
       const saved = initialData?.id
         ? await updateAsset(initialData.id, payload)
-        : await createAsset(payload);
+        : 
+        await createAsset(payload);
       onSave(saved);
     } catch (err) {
       console.error("Failed to save asset", err);
@@ -129,7 +152,7 @@ export default function AssetForm({ initialData, onSave, onCancel }: Props) {
           <button
             type="button"
             onClick={doFetch}
-            disabled={loading || !cusip.trim() || !type}
+            disabled={loading}//|| !cusip.trim() || !type
             className={`btn-form-secondary ${
               loading ? "btn-form" : "btn-form-secondary"
             }`}
@@ -212,7 +235,7 @@ export default function AssetForm({ initialData, onSave, onCancel }: Props) {
           <span className="text-sm">Maturity</span>
           <input
             type="date"
-            value={maturity}
+            value={maturity? formatDateForInput(maturity):''}
             onChange={e => setMaturity(e.target.value)}
             className="border rounded p-2 text-sm"
           />

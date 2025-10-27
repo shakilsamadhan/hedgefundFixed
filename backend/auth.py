@@ -54,3 +54,15 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise HTTPException(status_code=401, detail="User not found")
     
     return user
+
+def check_permission(user: models.User, permission: str):
+    has_permission = any(
+        action.name == permission
+        for role in user.roles
+        for action in role.actions
+    )
+    if not has_permission:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"You do not have permission to {permission}",
+        )

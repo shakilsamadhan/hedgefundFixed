@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { handleGoogle } from "../../api/auth";
+import { handleGoogleLogin } from "../../api/auth";
 import "./Auth.css";
 
 const SignIn: React.FC = () => {
@@ -49,8 +49,12 @@ const SignIn: React.FC = () => {
         password,
       });
       const token = res.data.access_token;
-      const user = { email: res.data.email, username: res.data.username || email.split("@")[0] };
-
+      const user = { 
+        email: res.data.user.email, 
+        username: res.data.user.username || email.split("@")[0],
+        roles: res.data.user.roles || [], 
+      };
+      console.log(res.data.user)
       setToken(token);
       setUser(user);
       navigate("/assets"); // Navigate to assets instead of dashboard
@@ -62,10 +66,10 @@ const SignIn: React.FC = () => {
     }
   };
 
-  const handleGoogleClick = async () => {
+  const handleGoogleClick = () => {
     try {
       setError("");
-      await handleGoogle();
+      handleGoogleLogin();
     } catch (err) {
       setError("Google sign in failed. Please try again.");
     }

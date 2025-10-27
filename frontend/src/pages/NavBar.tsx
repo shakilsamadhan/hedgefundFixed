@@ -60,6 +60,22 @@ const Navbar = () => {
               >
                 Watchlist
               </NavLink>
+              <NavLink
+                to="/actionmanager"
+                className={({ isActive }) =>
+                  `navbar-link ${isActive ? 'active' : ''}`
+                }
+              >
+                Action Manager
+              </NavLink>
+              <NavLink
+                to="/rolemanager"
+                className={({ isActive }) =>
+                  `navbar-link ${isActive ? 'active' : ''}`
+                }
+              >
+                Role Manager
+              </NavLink>
             </>
           ) : (
             <>

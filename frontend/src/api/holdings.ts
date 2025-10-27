@@ -1,6 +1,6 @@
 // frontend/src/api/holdings.ts
 import axios from "./client";
-import axios from "./client";
+import api from "./interceptors";
 
 
 export interface Holding {
@@ -15,6 +15,6 @@ export interface Holding {
 }
 
 export async function getHoldings(): Promise<Holding[]> {
-  const resp = await axios.get<Holding[]>("/holdings/");
+  const resp = await api.get<Holding[]>("/api/holdings/");
   return resp.data;
 }

@@ -35,19 +35,22 @@ export default function Assets() {
 
   // save handler for both create & update
   const handleSave = async (vals: AssetFormValues) => {
-    try {
-      if (vals.id) {
-        await updateAsset(vals.id, vals);
-      } else {
-        await createAsset(vals);
-      }
+    //console.log(vals)
+    // try {
+    //   if (vals.id) {
+    //     await updateAsset(vals.id, vals);
+    //     console.log('updateLine')
+    //   } else {
+    //     await createAsset(vals);
+    //     console.log('createLine')
+    //   }
       setShowForm(false);
       setEditingAsset(null);
       await loadAssets();
-    } catch (err) {
-      console.error("Failed to save asset", err);
-      alert(vals.id ? "Could not update asset" : "Could not create asset");
-    }
+    // } catch (err) {
+    //   console.error("Failed to save asset", err);
+    //   alert(vals.id ? "Could not update asset" : "Could not create asset");
+    // }
   };
 
   // delete handler

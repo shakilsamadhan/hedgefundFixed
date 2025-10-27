@@ -55,13 +55,28 @@ def signin(user: schemas.UserLogin, db: Session = Depends(get_db)):
     if not db_user or not verify_password(user.password, db_user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    roles = [role.name for role in db_user.roles]
-    token = create_access_token({"sub": db_user.email, "roles": roles})
+    roles = [
+        {
+            "id": role.id,
+            "name": role.name,
+            "actions": [{"id": action.id, "name": action.name} for action in role.actions]
+        }
+        for role in db_user.roles
+    ]
 
-    return {"access_token": token, "token_type": "bearer", "roles": roles}
+    token = create_access_token({"sub": db_user.email, "roles": [r["name"] for r in roles]})
 
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "id": db_user.id,
+            "email": db_user.email,
+            "username": db_user.username,
+            "roles": roles,
+        }
+    }
 
-# -------- Google OAuth Login --------
 
 @router.get("/google")
 def login_with_google():
@@ -78,30 +93,31 @@ def login_with_google():
 
 @router.get("/google/callback")
 def google_callback(code: str, db: Session = Depends(get_db)):
-    # Exchange code for token
+    #Exchange code for access token
     token_res = requests.post(
         "https://oauth2.googleapis.com/token",
         data={
             "code": code,
             "client_id": GOOGLE_CLIENT_ID,
             "client_secret": GOOGLE_CLIENT_SECRET,
-            "redirect_uri": REDIRECT_URI,
+            "redirect_uri": "http://localhost:8000/auth/google/callback",
             "grant_type": "authorization_code",
         },
     )
     token_res.raise_for_status()
     access_token = token_res.json()["access_token"]
 
-    # Get user info from Google
+    # Fetch user info
     user_res = requests.get(
         "https://www.googleapis.com/oauth2/v2/userinfo",
-        headers={"Authorization": f"Bearer {access_token}"}
+        headers={"Authorization": f"Bearer {access_token}"},
     )
     user_info = user_res.json()
+    userId = user_info["id"]
     email = user_info["email"]
     username = user_info.get("name", email.split("@")[0])
 
-    # Create or fetch user
+    # Create or fetch user in DB
     user = db.query(models.User).filter(models.User.email == email).first()
     if not user:
         user = models.User(
@@ -119,25 +135,25 @@ def google_callback(code: str, db: Session = Depends(get_db)):
             db.refresh(trader_role)
 
         user.roles.append(trader_role)
-
         db.add(user)
         db.commit()
         db.refresh(user)
 
-    # Collect roles
-    roles = [role.name for role in user.roles]
+    # Prepare user + roles
+    roles_data = [{"id": r.id, "name": r.name} for r in user.roles]
 
-    # Create JWT with roles
-    token = create_access_token({"sub": user.email, "roles": roles})
+    # Create JWT
+    token = create_access_token({"sub": user.email, "roles": [r["name"] for r in roles_data]})
 
-    # Redirect back to frontend with token + user info + roles
+    # 6Redirect popup to frontend with token + user
     frontend_url = (
         f"http://localhost:5173/auth/google/callback"
-        f"?token={token}&email={user.email}&username={user.username}"
-        f"&roles={','.join(roles)}"
+        f"?token={token}"
+        f"&email={user.email}"
+        f"&username={user.username}"
+        f"&roles={','.join([r['name'] for r in roles_data])}"
     )
     return RedirectResponse(frontend_url)
-
 
 @router.get("/userlist", response_model=list[schemas.User])
 def get_users(db: Session = Depends(get_db)):

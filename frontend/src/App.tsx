@@ -16,6 +16,9 @@ import GoogleCallback from "./pages/Auth/GoogleCallBack";
 import { useAuth } from "./context/AuthContext";
 import "./App.css";
 import RoleActionManager from "./pages/RoleActionManager";
+import { setupInterceptors } from "./api/interceptors";
+import UserRoleManager from "./pages/RoleManager";
+
 
 export default function App() {
   const { isLoggedIn } = useAuth();
@@ -75,8 +78,16 @@ export default function App() {
           <Route
             path="/actionmanager"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute requiredRole="admin">
                 <RoleActionManager/>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/rolemanager"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <UserRoleManager/>
               </ProtectedRoute>
             }
           />

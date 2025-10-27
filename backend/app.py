@@ -17,7 +17,7 @@ app = FastAPI(
 )
 
 # Drop all tables
-#Base.metadata.drop_all(bind=engine)
+# Base.metadata.drop_all(bind=engine)
 
 Base.metadata.create_all(bind=engine)
 

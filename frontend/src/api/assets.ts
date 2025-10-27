@@ -1,5 +1,6 @@
 // frontend/src/api/assets.ts
 import axios from "./client";
+import api from "./interceptors";
 
 // Define the Asset type (add more fields as needed)
 export interface Asset {
@@ -21,17 +22,13 @@ export interface Asset {
 }
 
 // Base URL for your backend (adjust if different)
-const BASE_URL = 'http://localhost:8000/api';
+const BASE_URL = '/api';
 
-const token = localStorage.getItem("token"); 
+// const token = localStorage.getItem("token"); 
 
 export const getAssets = async (): Promise<Asset[]> => {
 
-  const response = await axios.get<Asset[]>(`${BASE_URL}/assets/`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await api.get<Asset[]>(`/assets/`);
   return response.data;
 };
 
@@ -52,13 +49,8 @@ export const createAsset = async (asset: {
   amount_outstanding?: number;
   mark?: number;            // ← allow sending mark
 }): Promise<Asset> => {
-  const response = await axios.post<Asset>(`${BASE_URL}/assets/`, asset,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`, // Send token in Authorization header
-      },
-    }
-  );
+  const response = await api.post<Asset>(`/assets/`, asset);
+  console.log('create');
   return response.data;
 };
 
@@ -82,14 +74,17 @@ export const updateAsset = async (
     mark?: number;          // ← allow sending updated mark
   }
 ): Promise<Asset> => {
-  const response = await axios.put<Asset>(
-    `${BASE_URL}/assets/${id}/`,
+      console.log('update data')
+  const response = await api.put<Asset>(
+    `/assets/${id}/`,
     data
   );
+  console.log(data)
+
   return response.data;
 };
 
 // Delete an existing asset
 export const deleteAsset = async (id: number): Promise<void> => {
-  await axios.delete(`${BASE_URL}/assets/${id}/`);
+  await api.delete(`/assets/${id}/`);
 };

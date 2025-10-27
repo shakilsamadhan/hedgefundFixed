@@ -1,6 +1,7 @@
 // frontend/src/api/trades.ts
 
 import axios from "axios";
+import api from "./interceptors";
 // import axios from "./client";
 
 
@@ -21,16 +22,16 @@ export interface Trade {
   notes?: string;
 }
 
-const BASE_URL = "http://localhost:8000/api";
+const BASE_URL = "/api";
 
 export const getTrades = (): Promise<Trade[]> =>
-  axios.get<Trade[]>(`${BASE_URL}/trades/`).then((res) => res.data);
+  api.get<Trade[]>(`${BASE_URL}/trades/`).then((res) => res.data);
 
 export const createTrade = (data: Omit<Trade, "id">): Promise<Trade> =>
-  axios.post<Trade>(`${BASE_URL}/trades/`, data).then((res) => res.data);
+  api.post<Trade>(`${BASE_URL}/trades/`, data).then((res) => res.data);
 
 export const updateTrade = (id: number, data: Omit<Trade, "id">): Promise<Trade> =>
-  axios.put<Trade>(`${BASE_URL}/trades/${id}/`, data).then((res) => res.data);
+  api.put<Trade>(`${BASE_URL}/trades/${id}/`, data).then((res) => res.data);
 
 export const deleteTrade = (id: number): Promise<void> =>
-  axios.delete(`${BASE_URL}/trades/${id}/`);
+  api.delete(`${BASE_URL}/trades/${id}/`);

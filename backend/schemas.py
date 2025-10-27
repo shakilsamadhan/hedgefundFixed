@@ -206,8 +206,20 @@ class User(UserBase):
     class Config:
         from_attributes = True
 
+class UserOut(BaseModel):
+    id: int
+    email: str
+    username: str
+    roles: List[Role] = []
+
+    class Config:
+        from_attributes = True
 
 # -------- Token --------
+
 class Token(BaseModel):
     access_token: str
     token_type: str
+    user: UserOut
+
+

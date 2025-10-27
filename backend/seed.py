@@ -7,14 +7,26 @@ def seed_data():
     db: Session = SessionLocal()
 
     # Define initial roles
-    roles = ["admin", "trader"]
+    roles = ["admin", "trader", "user"]
 
     # Define initial actions
     actions = [
         "CREATE_ASSET",
         "DELETE_ASSET",
         "VIEW_ASSET",
-        "UPDATE_ASSET"
+        "UPDATE_ASSET",
+        "CREATE_TRADE",
+        "DELETE_TRADE",
+        "VIEW_TRADE",
+        "UPDATE_TRADE",
+        "CREATE_MACRO",
+        "DELETE_MACRO",
+        "VIEW_MACRO",
+        "UPDATE_MACRO",
+        "CREATE_WATCHLIST",
+        "DELETE_WATCHLIST",
+        "VIEW_WATCHLIST",
+        "UPDATE_WATCHLIST",
     ]
 
     # Insert roles if not exist
@@ -32,6 +44,7 @@ def seed_data():
     # Assign default actions to roles
     admin = db.query(models.Role).filter_by(name="admin").first()
     trader = db.query(models.Role).filter_by(name="trader").first()
+    user = db.query(models.Role).filter_by(name="user").first()
 
     create_asset = db.query(models.Action).filter_by(name="CREATE_ASSET").first()
     delete_asset = db.query(models.Action).filter_by(name="DELETE_ASSET").first()
