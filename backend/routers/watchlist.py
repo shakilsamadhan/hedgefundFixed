@@ -10,6 +10,8 @@ import math
 from ..database import get_db
 from ..models import WatchListItem
 from ..schemas import WatchItemCreate, WatchItem, WatchItemWithData
+from backend.auth import get_current_user, check_permission
+from backend import crud, schemas, database, models
 # from ..services.bloomberg import fetch_watchlist_data
 
 router = APIRouter(prefix="/api/watchlist", tags=["WatchList"])
@@ -106,6 +108,25 @@ dummy_watchlist = [
     },
 ]
 
-@router.get("", response_model=List[dict])
-async def list_watch():
+@router.get("", response_model=List[WatchItem])
+async def list_watch(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+    ):
+    # check_permission(current_user, "VIEW_WATCHLIST")
+    # items = (
+    #     db.query(models.WatchListItem)
+    #     .filter(models.WatchListItem.user_id == current_user.id)
+    #     .all()
+    # )
+
+    # return items
     return JSONResponse(content=jsonable_encoder(dummy_watchlist))
+
+# @router.get("/", response_model=List[schemas.Trade])
+# def read_trades(
+#     db: Session = Depends(get_db),
+#     current_user: models.User = Depends(get_current_user)
+#     ):
+#     check_permission(current_user, "VIEW_TRADE")
+#     return crud.get_trades(db)

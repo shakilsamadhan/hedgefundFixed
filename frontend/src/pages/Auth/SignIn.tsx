@@ -50,6 +50,7 @@ const SignIn: React.FC = () => {
       });
       const token = res.data.access_token;
       const user = { 
+        id: res.data.user.id, 
         email: res.data.user.email, 
         username: res.data.user.username || email.split("@")[0],
         roles: res.data.user.roles || [], 

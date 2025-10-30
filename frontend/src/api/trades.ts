@@ -16,13 +16,14 @@ export interface Trade {
   price: number;
   counterparty?: string;
   fund_alloc?: string;
+  asset_name?:string;
   sub_alloc?: string;
   agreement_type?: string;
   doc_type?: string;
   notes?: string;
 }
 
-const BASE_URL = "/api";
+const BASE_URL = "";
 
 export const getTrades = (): Promise<Trade[]> =>
   api.get<Trade[]>(`${BASE_URL}/trades/`).then((res) => res.data);

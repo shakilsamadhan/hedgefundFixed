@@ -18,16 +18,29 @@ def read_trades(
     return crud.get_trades(db)
 
 @router.post("/", response_model=schemas.Trade)
-def create_trade(trade: schemas.TradeCreate, db: Session = Depends(get_db)):
+def create_trade(
+    trade: schemas.TradeCreate, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+    ):
     check_permission(current_user, "CREATE_TRADE")
     return crud.create_trade(db, trade)
 
 @router.put("/{trade_id}/", response_model=schemas.Trade)
-def update_trade(trade_id: int, trade: schemas.TradeCreate, db: Session = Depends(get_db)):
-    check_permission(current_user, "EDIT_TRADE")
+def update_trade(
+    trade_id: int, 
+    trade: schemas.TradeCreate, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+    ):
+    check_permission(current_user, "UPDATE_TRADE")
     return crud.update_trade(db, trade_id, trade)
 
 @router.delete("/{trade_id}/", status_code=status.HTTP_204_NO_CONTENT)
-def delete_trade(trade_id: int, db: Session = Depends(get_db)):
+def delete_trade(
+    trade_id: int, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+    ):
     check_permission(current_user, "DELETE_TRADE")
     crud.delete_trade(db, trade_id)

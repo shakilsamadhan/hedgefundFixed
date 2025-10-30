@@ -1,5 +1,5 @@
 import client from "./client";
-
+import api from "./interceptors";
 export interface WatchItem {
   id: number;
   cusip: string;
@@ -31,7 +31,7 @@ export interface WatchItemWithData extends WatchItem {
 }
 
 export function listWatch(): Promise<WatchItemWithData[]> {
-  return client.get<WatchItemWithData[]>("/watchlist").then((r) => r.data);
+  return api.get<WatchItemWithData[]>("/watchlist").then((r) => r.data);
 }
 
 export function addToWatch(

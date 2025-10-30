@@ -149,6 +149,7 @@ def google_callback(code: str, db: Session = Depends(get_db)):
     frontend_url = (
         f"http://localhost:5173/auth/google/callback"
         f"?token={token}"
+        f"&user_id={user.id}"
         f"&email={user.email}"
         f"&username={user.username}"
         f"&roles={','.join([r['name'] for r in roles_data])}"

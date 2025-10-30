@@ -88,6 +88,7 @@ export default function TradeForm({
   const [notes, setNotes]             = useState(initialData?.notes        ?? "");
 
   // When editing, keep the initial asset-id
+  console.log(assets)
   useEffect(() => {
     if (initialData?.asset_id !== undefined) {
       setAssetId(initialData.asset_id);
@@ -136,7 +137,7 @@ export default function TradeForm({
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <form
         onSubmit={handleSubmit}
-        className="bg-white rounded-2xl shadow-lg p-6 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl w-full"
+        className="bg-white rounded-2xl shadow-lg p-6 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl w-full max-h-[90vh] overflow-y-auto"
       >
         <h2 className="col-span-2 text-xl font-semibold">
           {initialData ? "Edit Trade" : "New Trade"}

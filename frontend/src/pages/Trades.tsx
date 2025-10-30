@@ -46,12 +46,12 @@ export default function Trades() {
   }, []);
 
   // save handler (for both create & update)
-  const handleSave = async (vals: TradeFormValues) => {
-    if (vals.id) {
-      await updateTrade(vals.id, vals);
-    } else {
-      await createTrade(vals);
-    }
+  const handleSave = async (vals: Trade) => {
+    // if (vals.id) {
+    //   await updateTrade(vals.id, vals);
+    // } else {
+    //   await createTrade(vals);
+    // }
     setShowForm(false);
     setEditingTrade(null);
     await loadTrades();
@@ -118,17 +118,17 @@ export default function Trades() {
           setEditingTrade({
             id: row.id,
             trade_date: row.trade_date,
-            settle_date: row.settle_date,
+            settle_date: row.settle_date || "",
             direction: row.direction,
             asset_type: row.asset_type,
             asset_name: row.asset_name,
-            quantity: row.quantity.toString(),
-            price: row.price.toString(),
-            counterparty: row.counterparty,
-            fund_alloc: row.fund_alloc,
-            sub_alloc: row.sub_alloc,
-            agreement_type: row.agreement_type,
-            doc_type: row.doc_type,
+            quantity: row.quantity,//.toString()
+            price: row.price,//.toString()
+            counterparty: row.counterparty || "",
+            fund_alloc: row.fund_alloc || "",
+            sub_alloc: row.sub_alloc || "",
+            agreement_type: row.agreement_type || "",
+            doc_type: row.doc_type || "",
             notes: row.notes ?? "",
           });
           setShowForm(true);
