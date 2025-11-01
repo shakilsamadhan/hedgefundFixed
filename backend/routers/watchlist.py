@@ -111,8 +111,32 @@ dummy_watchlist = [
 @router.get("", response_model=List[WatchItem])
 async def list_watch(
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
+    current_user: models.User = Depends(get_current_user),
+    skip: int = 0, limit: int = 100
     ):
+   # Get WatchListItems from DB
+    watchListItems = db.query(models.WatchListItem).offset(skip).limit(limit).all()
+
+    result = []
+
+    # # Loop through each WatchListItem
+    for item in watchListItems:
+        # Fetch dynamic data from Bloomberg
+        bloomberg_data = crud.get_bloombergdata(item.cusip, item.asset_type)
+
+        # Merge static DB fields with dynamic Bloomberg data
+        item_data = {
+            "id": item.id,
+            "cusip": item.cusip,
+            "asset_type": item.asset_type.value,
+            "issuer": bloomberg_data.get("issuer") or "",
+            "deal_name": bloomberg_data.get("deal_name") or "",
+            
+        }
+        print(item_data)
+        result.append(item_data)
+
+    return watchListItems
     # check_permission(current_user, "VIEW_WATCHLIST")
     # items = (
     #     db.query(models.WatchListItem)

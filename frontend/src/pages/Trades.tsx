@@ -23,6 +23,7 @@ export default function Trades() {
     try {
       const data = await getTrades();
       setTrades(data);
+      // console.log(data)
     } catch (err) {
       console.error("Error fetching trades", err);
       alert("Failed to load trades");
@@ -121,7 +122,7 @@ export default function Trades() {
             settle_date: row.settle_date || "",
             direction: row.direction,
             asset_type: row.asset_type,
-            asset_name: row.asset_name,
+            asset_id: row.asset_id,
             quantity: row.quantity,//.toString()
             price: row.price,//.toString()
             counterparty: row.counterparty || "",

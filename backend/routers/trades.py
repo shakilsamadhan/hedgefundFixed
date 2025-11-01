@@ -15,7 +15,7 @@ def read_trades(
     current_user: models.User = Depends(get_current_user)
     ):
     check_permission(current_user, "VIEW_TRADE")
-    return crud.get_trades(db)
+    return crud.get_trades(db, current_user=current_user)
 
 @router.post("/", response_model=schemas.Trade)
 def create_trade(
@@ -24,7 +24,7 @@ def create_trade(
     current_user: models.User = Depends(get_current_user)
     ):
     check_permission(current_user, "CREATE_TRADE")
-    return crud.create_trade(db, trade)
+    return crud.create_trade(db, trade, current_user)
 
 @router.put("/{trade_id}/", response_model=schemas.Trade)
 def update_trade(

@@ -63,7 +63,9 @@ class Trade(Base):
     agreement_type = Column(String, nullable=True)
     doc_type = Column(String, nullable=True)
     notes = Column(String, nullable=True)
-
+    created_by = Column(Integer, ForeignKey("users.id"))  # link to user
+    creator = relationship("User")
+    
     asset = relationship("Asset", back_populates="trades")
 
 class WatchListItem(Base):

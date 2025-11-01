@@ -55,14 +55,25 @@ def delete_asset(db: Session, asset_id: int) -> None:
         db.delete(db_asset)
         db.commit()
 
-def get_trades(db: Session, skip: int = 0, limit: int = 100) -> List[models.Trade]:
-    return db.query(models.Trade).offset(skip).limit(limit).all()
+def get_trades(db: Session, current_user: models.User, skip: int = 0, limit: int = 100) -> List[models.Trade]:
+    # return db.query(models.Trade).offset(skip).limit(limit).all()
+
+ # Admin sees all
+    if any(role.name == "admin" for role in current_user.roles):
+        return db.query(models.Trade).offset(skip).limit(limit).all()
+    
+    # Trader sees only their own assets
+    return db.query(models.Trade)\
+             .filter(models.Trade.created_by == current_user.id)\
+             .offset(skip)\
+             .limit(limit)\
+             .all()
 
 def get_trade(db: Session, trade_id: int) -> models.Trade | None:
     return db.query(models.Trade).filter(models.Trade.id == trade_id).first()
 
-def create_trade(db: Session, trade: schemas.TradeCreate) -> models.Trade:
-    db_trade = models.Trade(**trade.dict())
+def create_trade(db: Session, trade: schemas.TradeCreate, current_user: models.User) -> models.Trade:
+    db_trade = models.Trade(**trade.dict(exclude={"created_by"}), created_by=current_user.id )
     db.add(db_trade)
     db.commit()
     db.refresh(db_trade)
@@ -83,6 +94,14 @@ def delete_trade(db: Session, trade_id: int) -> None:
     if db_trade:
         db.delete(db_trade)
         db.commit()
+#get the bloomberg data from tha xlsx file
+def get_bloombergdata(cusip: str, asset_type:str) -> None:
+     return {
+        "issuer": cusip,
+        "deal_name": asset_type.value
+    }
+
+
 
 # ----- HOLDINGS AGGREGATION -----
 

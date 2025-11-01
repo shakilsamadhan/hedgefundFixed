@@ -48,7 +48,7 @@ def fetch_asset_data(payload: AssetFetchRequest):
         if v is None or (isinstance(v, float) and (math.isnan(v) or math.isinf(v))):
             record[k] = None
 
-    print(record)
+    # print(record)
     # Map Excel column names to front-end expected fields
     response_data = {
         "deal_name": record.get("Asset (Deal Name)", ""),

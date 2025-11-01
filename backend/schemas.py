@@ -50,6 +50,7 @@ class TradeBase(BaseModel):
     agreement_type: Optional[str] = None
     doc_type: Optional[str] = None
     notes: Optional[str] = None
+    created_by: Optional[int] = None
 
 class TradeCreate(TradeBase):
     pass
