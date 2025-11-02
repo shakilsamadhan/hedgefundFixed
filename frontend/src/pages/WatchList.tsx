@@ -29,6 +29,7 @@ export default function WatchList() {
       .then(setItems)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
+    console.log(items)
   };
 
   useEffect(reload, []);

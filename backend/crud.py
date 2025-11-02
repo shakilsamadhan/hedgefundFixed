@@ -7,6 +7,9 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 from backend.auth import get_password_hash, verify_password, create_access_token
 from fastapi import HTTPException, status
+from pathlib import Path
+import pandas as pd
+import math
 
 # ----- ASSET & TRADE CRUD (unchanged) -----
 
@@ -95,12 +98,46 @@ def delete_trade(db: Session, trade_id: int) -> None:
         db.delete(db_trade)
         db.commit()
 #get the bloomberg data from tha xlsx file
-def get_bloombergdata(cusip: str, asset_type:str) -> None:
-     return {
-        "issuer": cusip,
-        "deal_name": asset_type.value
+def load_file(asset_type: str):
+    file_map = {
+        "Corporate Bond": "backend/data/bonds.xlsx",
+        "Government Bond": "backend/data/bonds.xlsx",
+        "Term Loan": "backend/data/loans.xlsx",
+        "Revolver": "backend/data/loans.xlsx",
     }
 
+    file_path = file_map.get(asset_type)
+
+    # Return None if asset type not mapped or file missing
+    if not file_path or not Path(file_path).exists():
+        return None
+
+    # Load Excel file
+    return pd.read_excel(file_path, header=2)
+# def get_bllombergData()
+
+def get_item_bloombergdata(cusip: str, asset_type: str):
+    df= load_file(asset_type)
+    if df is None:
+        return None
+    if "ID" not in df.columns:
+        return None
+    # Filter by CUSIP
+    filtered = df.loc[df['ID'] == cusip]
+
+    # Return None if no CUSIP found
+    if filtered.empty:
+        return None
+
+    # Extract row as dictionary
+    record = filtered.iloc[0].to_dict()
+
+    # Clean NaN values
+    for k, v in record.items():
+        if v is None or (isinstance(v, float) and (math.isnan(v) or math.isinf(v))):
+            record[k] = None
+
+    return record
 
 
 # ----- HOLDINGS AGGREGATION -----

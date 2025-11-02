@@ -28,6 +28,13 @@ def add_to_watch(
     existing = db.query(WatchListItem).filter_by(cusip=payload.cusip).first()
     if existing:
         raise HTTPException(400, f"{payload.cusip} is already on your watch list")
+    
+    bloomberg_data = crud.get_item_bloombergdata(payload.cusip, payload.asset_type)
+    if not bloomberg_data:
+        raise HTTPException(
+            404,
+            detail=f"No Bloomberg data found for {payload.cusip} ({payload.asset_type})"
+        )
     item = WatchListItem(**payload.model_dump())
     db.add(item)
     db.commit()
@@ -108,7 +115,7 @@ dummy_watchlist = [
     },
 ]
 
-@router.get("", response_model=List[WatchItem])
+@router.get("")
 async def list_watch(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
@@ -122,30 +129,41 @@ async def list_watch(
     # # Loop through each WatchListItem
     for item in watchListItems:
         # Fetch dynamic data from Bloomberg
-        bloomberg_data = crud.get_bloombergdata(item.cusip, item.asset_type)
-
+        bloomberg_data = crud.get_item_bloombergdata(item.cusip, item.asset_type)
+        #print(bloomberg_data)
         # Merge static DB fields with dynamic Bloomberg data
         item_data = {
             "id": item.id,
             "cusip": item.cusip,
             "asset_type": item.asset_type.value,
-            "issuer": bloomberg_data.get("issuer") or "",
-            "deal_name": bloomberg_data.get("deal_name") or "",
-            
+            "issuer": bloomberg_data.get('Issuer') if bloomberg_data else None,
+            "deal_name": bloomberg_data.get('Asset (Deal Name)') if bloomberg_data else None,
+            "spread_coupon": bloomberg_data.get('Spread/Coupon') if bloomberg_data else None,
+            "maturity": bloomberg_data.get('Maturity') if bloomberg_data else None,
+            "px_bid": bloomberg_data.get('Bid Price') if bloomberg_data else None,
+            "px_ask": bloomberg_data.get('Offer Price') if bloomberg_data else None,
+            "yld_cnv_bid": bloomberg_data.get('YTW') if bloomberg_data else None,
+            "dm_zspread": bloomberg_data.get('DM/Zspread') if bloomberg_data else None,
+            "chg_net_1d": bloomberg_data.get('1d Net Px Chg') if bloomberg_data else None,
+            "chg_net_5d": bloomberg_data.get('5d Net Px Chg') if bloomberg_data else None,
+            "chg_net_1m": bloomberg_data.get('30d Net Px Chg') if bloomberg_data else None,
+            "chg_net_6m": bloomberg_data.get('6m Net Px Chg') if bloomberg_data else None,
+            "chg_net_ytd": bloomberg_data.get('YTD Net Px Chg') if bloomberg_data else None,
+            "interval_high": bloomberg_data.get('12m High') if bloomberg_data else None,
+            "interval_low": bloomberg_data.get('12m Low') if bloomberg_data else None,
+            "payment_rank": bloomberg_data.get('Payment Rank') if bloomberg_data else None,
+            "rtg_moody_long_term": bloomberg_data.get('Moody CFR') if bloomberg_data else None,
+            "rtg_moody": bloomberg_data.get('Moody Asset') if bloomberg_data else None,
+            "rtg_sp_lt_lc_issuer_credit": bloomberg_data.get('S&P CFR') if bloomberg_data else None,
+            "rtg_sp": bloomberg_data.get('S&P Asset') if bloomberg_data else None,
+            "amt_outstanding": bloomberg_data.get('Amount Outstanding') if bloomberg_data else None,
+
+            # Bloomberg error fallback
+           "error": None if bloomberg_data else f"{item.id} Bloomberg data not found"  
         }
-        print(item_data)
         result.append(item_data)
-
-    return watchListItems
-    # check_permission(current_user, "VIEW_WATCHLIST")
-    # items = (
-    #     db.query(models.WatchListItem)
-    #     .filter(models.WatchListItem.user_id == current_user.id)
-    #     .all()
-    # )
-
-    # return items
-    return JSONResponse(content=jsonable_encoder(dummy_watchlist))
+    #print(result)
+    return result
 
 # @router.get("/", response_model=List[schemas.Trade])
 # def read_trades(

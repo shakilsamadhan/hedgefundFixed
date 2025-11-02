@@ -31,7 +31,7 @@ export interface WatchItemWithData extends WatchItem {
 }
 
 export function listWatch(): Promise<WatchItemWithData[]> {
-  return api.get<WatchItemWithData[]>("/watchlist").then((r) => r.data);
+  return api.get<WatchItemWithData[]>("/watchlist").then((r) => r.data );
 }
 
 export function addToWatch(
