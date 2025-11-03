@@ -3,7 +3,7 @@ SQLAlchemy models for Assets, Trades, and related entities.
 """
 import enum
 from sqlalchemy import Enum as SAEnum
-from sqlalchemy import Table, Column, Integer, String, Date, Numeric, ForeignKey
+from sqlalchemy import Table, Column, Integer, String, Date, Numeric, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from .database import Base
 from sqlalchemy import Enum as SAEnum
@@ -70,10 +70,16 @@ class Trade(Base):
 
 class WatchListItem(Base):
     __tablename__ = "watchlist"
+    __table_args__ = (
+        UniqueConstraint('cusip', 'created_by', name='uq_user_cusip'),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
-    cusip = Column(String, nullable=False, unique=True, index=True)
+    cusip = Column(String, nullable=False, index=True)
     asset_type = Column(SAEnum(AssetType, name="asset_type"), nullable=False, index=True)
+    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)  # ✅ new column
+
+    user = relationship("User", back_populates="watchlist")
 
 # User ↔ Role (many-to-many)
 user_roles = Table(
@@ -99,6 +105,7 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     roles = relationship("Role", secondary=user_roles, back_populates="users")
+    watchlist = relationship("WatchListItem", back_populates="user", cascade="all, delete-orphan")
     def has_action(self, action_name: str) -> bool:
         """Check if this user has a given action permission"""
         return any(action.name == action_name for role in self.roles for action in role.actions)

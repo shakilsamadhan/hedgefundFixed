@@ -21,13 +21,14 @@ router = APIRouter(prefix="/api/watchlist", tags=["WatchList"])
 def add_to_watch(
     payload: WatchItemCreate,
     db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
 ):
     """
     Add a new CUSIP to the watch list.
     """
-    existing = db.query(WatchListItem).filter_by(cusip=payload.cusip).first()
+    existing = db.query(WatchListItem).filter_by(cusip=payload.cusip, created_by=current_user.id).first()
     if existing:
-        raise HTTPException(400, f"{payload.cusip} is already on your watch list")
+        raise HTTPException(400, f"{payload.cusip} is already on your watch list for {current_user.id}")
     
     bloomberg_data = crud.get_item_bloombergdata(payload.cusip, payload.asset_type)
     if not bloomberg_data:
@@ -35,7 +36,11 @@ def add_to_watch(
             404,
             detail=f"No Bloomberg data found for {payload.cusip} ({payload.asset_type})"
         )
-    item = WatchListItem(**payload.model_dump())
+    item = WatchListItem(
+        cusip=payload.cusip,
+        asset_type=payload.asset_type,
+        created_by=current_user.id
+    )
     db.add(item)
     db.commit()
     db.refresh(item)
@@ -121,8 +126,19 @@ async def list_watch(
     current_user: models.User = Depends(get_current_user),
     skip: int = 0, limit: int = 100
     ):
+        # Admin sees all
+    if any(role.name == "admin" for role in current_user.roles):
+        watchListItems = db.query(models.WatchListItem).offset(skip).limit(limit).all()
+    
+    # Trader sees only their own assets
+    else:
+        watchListItems= db.query(models.WatchListItem)\
+                .filter(models.WatchListItem.created_by == current_user.id)\
+                .offset(skip)\
+                .limit(limit)\
+                .all()
    # Get WatchListItems from DB
-    watchListItems = db.query(models.WatchListItem).offset(skip).limit(limit).all()
+    # watchListItems = db.query(models.WatchListItem).offset(skip).limit(limit).all()
 
     result = []
 
@@ -135,6 +151,8 @@ async def list_watch(
         item_data = {
             "id": item.id,
             "cusip": item.cusip,
+            "created_by": item.user.username,
+            # "user":item.user,
             "asset_type": item.asset_type.value,
             "issuer": bloomberg_data.get('Issuer') if bloomberg_data else None,
             "deal_name": bloomberg_data.get('Asset (Deal Name)') if bloomberg_data else None,

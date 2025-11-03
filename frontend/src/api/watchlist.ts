@@ -7,6 +7,7 @@ export interface WatchItem {
 }
 
 export interface WatchItemWithData extends WatchItem {
+  created_by?:number;
   issuer?: string;
   deal_name?: string;
   ln_current_margin?: number;
@@ -38,7 +39,7 @@ export function addToWatch(
   cusip: string,
   asset_type: string
 ): Promise<WatchItem> {
-  return client
+  return api
     .post<WatchItem>("/watchlist", { cusip, asset_type })
     .then((r) => r.data);
 }

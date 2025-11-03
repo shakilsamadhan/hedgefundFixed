@@ -68,6 +68,12 @@ export default function WatchList() {
 
   const columns: Column<WatchItemWithData>[] = [
     { key: "cusip", header: "CUSIP", align: "left" },
+    { 
+      key: "created_by",   
+      header: "Created By",
+      align: "left", 
+      format: (v) => v ?? "—" 
+    },
     { key: "asset_type", header: "Asset Type", align: "left" },
     { key: "issuer", header: "Issuer", align: "left" },
     { key: "deal_name", header: "Deal Name", align: "left" },

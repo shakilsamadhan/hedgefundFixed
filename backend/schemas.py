@@ -100,7 +100,7 @@ class WatchItemCreate(WatchItemBase):
 
 class WatchItem(WatchItemBase):
     id: int
-
+    created_by: int
     model_config = {
         "from_attributes": True
     }
