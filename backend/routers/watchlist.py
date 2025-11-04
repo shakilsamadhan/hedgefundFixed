@@ -26,6 +26,7 @@ def add_to_watch(
     """
     Add a new CUSIP to the watch list.
     """
+    check_permission(current_user, "CREATE_WATCHLIST")
     existing = db.query(WatchListItem).filter_by(cusip=payload.cusip, created_by=current_user.id).first()
     if existing:
         raise HTTPException(400, f"{payload.cusip} is already on your watch list for {current_user.id}")
@@ -51,10 +52,12 @@ def add_to_watch(
 def remove_from_watch(
     item_id: int,
     db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
 ):
     """
     Remove a CUSIP from the watch list.
     """
+    check_permission(current_user, "DELETE_WATCHLIST")
     item = db.get(WatchListItem, item_id)
     if not item:
         raise HTTPException(404, "Watch list item not found")
@@ -126,7 +129,8 @@ async def list_watch(
     current_user: models.User = Depends(get_current_user),
     skip: int = 0, limit: int = 100
     ):
-        # Admin sees all
+    check_permission(current_user, "VIEW_WATCHLIST")
+    # Admin sees all
     if any(role.name == "admin" for role in current_user.roles):
         watchListItems = db.query(models.WatchListItem).offset(skip).limit(limit).all()
     
