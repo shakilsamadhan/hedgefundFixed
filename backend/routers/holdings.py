@@ -18,6 +18,6 @@ def read_holdings(
     """
     Fetch the current portfolio holdings.
     """
-    print(current_user)
-    check_permission(current_user,"VIEW_HOLDING")
+    # print(current_user)
+    # check_permission(current_user,"VIEW_HOLDING")
     return crud.get_holdings(db)

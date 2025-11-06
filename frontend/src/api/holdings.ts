@@ -15,6 +15,6 @@ export interface Holding {
 }
 
 export async function getHoldings(): Promise<Holding[]> {
-  const resp = await api.get<Holding[]>("/api/holdings/");
+  const resp = await api.get<Holding[]>("/holdings/");
   return resp.data;
 }
