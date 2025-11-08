@@ -33,3 +33,7 @@ npm install
 npm run dev
 ```
 
+Run the seeder
+
+```python -m backend.seed```
+

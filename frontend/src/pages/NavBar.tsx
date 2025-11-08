@@ -4,7 +4,12 @@ import LogoutButton from "../components/LogOutButton";
 import "./NavBar.css"; 
 
 const Navbar = () => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
+
+  // Check if user has admin role
+  const isAdmin = user?.roles?.some(role => 
+    role.name.toLowerCase() === 'admin'
+  ) ?? false;
 
   return (
     <nav className="modern-navbar">
@@ -60,22 +65,26 @@ const Navbar = () => {
               >
                 Watchlist
               </NavLink>
-              <NavLink
-                to="/actionmanager"
-                className={({ isActive }) =>
-                  `navbar-link ${isActive ? 'active' : ''}`
-                }
-              >
-                Action Manager
-              </NavLink>
-              <NavLink
-                to="/rolemanager"
-                className={({ isActive }) =>
-                  `navbar-link ${isActive ? 'active' : ''}`
-                }
-              >
-                Role Manager
-              </NavLink>
+              {isAdmin && (
+                <>
+                  <NavLink
+                    to="/actionmanager"
+                    className={({ isActive }) =>
+                      `navbar-link ${isActive ? 'active' : ''}`
+                    }
+                  >
+                    Action Manager
+                  </NavLink>
+                  <NavLink
+                    to="/rolemanager"
+                    className={({ isActive }) =>
+                      `navbar-link ${isActive ? 'active' : ''}`
+                    }
+                  >
+                    Role Manager
+                  </NavLink>
+                </>
+              )}
             </>
           ) : (
             <>
