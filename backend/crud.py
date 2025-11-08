@@ -161,7 +161,7 @@ def get_holdings(db: Session) -> List[schemas.Holding]:
     """
     holdings: List[schemas.Holding] = []
     all_assets = db.query(models.Asset).all()
-    print(all_assets)
+    # print(all_assets)
     for asset in all_assets:
         trds = db.query(models.Trade).filter(models.Trade.asset_id == asset.id).all()
 

@@ -27,7 +27,7 @@ class Asset(Base):
     __tablename__ = "assets"
 
     id = Column(Integer, primary_key=True, index=True)
-    cusip = Column(String, unique=True, index=True, nullable=False)
+    cusip = Column(String, index=True, nullable=False)
     type = Column(SAEnum(AssetType, name="asset_type"), nullable=False)
     display_name = Column(String, nullable=False)
     issuer = Column(String, nullable=True)
@@ -45,6 +45,9 @@ class Asset(Base):
     creator = relationship("User")
 
     trades = relationship("Trade", back_populates="asset", cascade="all, delete")
+    __table_args__ = (
+        UniqueConstraint('cusip', 'created_by', name='uq_user_asset_cusip'),
+    )
 
 class Trade(Base):
     __tablename__ = "trades"
